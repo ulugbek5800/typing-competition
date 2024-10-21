@@ -18,8 +18,8 @@ def start_game():
 
 @game_bp.route('api/submit-score', methods=['POST'])
 def submit_score():
-    result = request.get_json()
-    wpm = result.get('wpm')
+    data = request.get_json()
+    wpm = data.get('wpm')
 
     if 'user_id' in session:
         pass
