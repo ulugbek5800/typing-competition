@@ -20,6 +20,10 @@ def signup():
     db.session.add(new_user)
     db.session.commit()
 
+    # login the user after sign-up
+    session['user_id'] = new_user.id
+    logged_in_users[new_user.username] = new_user.id
+
     return jsonify({"message": "registration successfull"}), 201
 
 @auth_bp.route('api/login', methods=["POST"])
