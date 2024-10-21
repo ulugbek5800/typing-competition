@@ -21,8 +21,13 @@ def submit_score():
     data = request.get_json()
     wpm = data.get('wpm')
 
-    if 'user_id' in session:
-        pass
-        # return jsonify({"message": "Score submitted", "new_high_score": wpm > user.highest_wpm}), 201
+    if 'user_id' in session:    # if session was saved in /login route (line 33 in auth.py)
+        user_id = session['user_id']
+        user = User.query.get(user_id)
+        new_score = Score(user_id=user.id, wpm=wpm) # user_id=user.id -> assigning id from User table to user_id (FK) in Score table
+        db.session.add(new_score)
+        if user.highest_wpm < wpm:
+            user.highest_wpm = wpm
+        db.session.commit()
     else:
         return jsonify({"message": "Score not saved (guest)", "wpm": wpm}), 200
