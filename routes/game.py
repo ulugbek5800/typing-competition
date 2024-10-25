@@ -7,6 +7,10 @@ game_bp = Blueprint('game', __name__)
 
 @game_bp.route('api/submit-score', methods=['POST'])
 def submit_score():
+    # add game mode: normal, hard (in JSON and database, and make logic to save)
+    # handle 2 leaderboards for 2 modes
+    # connect backend and frontend, deploy and check (it should be complete working project)
+
     data = request.get_json()
     wpm = data.get('wpm')
 

@@ -1,5 +1,6 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from flask_jwt_extended import JWTManager
 from routes.game import game_bp
 from routes.auth import auth_bp
 from routes.leaderboard import leaderboard_bp
@@ -10,8 +11,10 @@ app = Flask(__name__)
 # Configure the database for app
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.config['SQLAlchemy_TRACK_MODIFICATIONS'] = False
+app.config['JWT_SECRET_KEY'] = 'webster_hackathon'
 
 db = SQLAlchemy(app)    # initializing the database
+jwt = JWTManager(app)
 
 # Register blueprints (routes)
 app.register_blueprint(game_bp)

@@ -1,11 +1,13 @@
 from flask import Blueprint, jsonify, request, session
+from werkzeug.security import generate_password_hash, check_password_hash
+from flask_jwt_extended import (
+    JWTManager, jwt_required, create_access_token, get_jwt_identity
+)
 from app import db
 from models import User
 
 auth_bp = Blueprint('auth', __name__)
-
-# in-memory session for simplicity
-logged_in_users = {}
+jwt = JWTManager()
 
 @auth_bp.route('api/signup', methods=["POST"])
 def signup():
@@ -15,16 +17,15 @@ def signup():
 
     if User.query.filter_by(username=username).first:
         return jsonify({"error": "Username already exists"}), 400
-    
-    new_user = User(username=username, password=password)
+
+    hashed_password = generate_password_hash(password)    
+
+    new_user = User(username=username, password=hashed_password)
     db.session.add(new_user)
     db.session.commit()
 
-    # login the user after sign-up
-    session['user_id'] = new_user.id
-    logged_in_users[new_user.username] = new_user.id
-
-    return jsonify({"message": "registration successfull"}), 201
+    access_token = create_access_token(identity=new_user.id)
+    return jsonify({"message": "Registration successfull", "access_token": access_token}), 201
 
 @auth_bp.route('api/login', methods=["POST"])
 def login():
@@ -32,10 +33,14 @@ def login():
     username = data.get("username")
     password = data.get("password")
 
-    user = User.query.filter_by(username=username, password=password)   # returns instance of User model, or none if not found
-    if user:
-        session['user_id'] = user.id        # stores user.id in sessions
-        logged_in_users[username] = user.id # adds user to loggen-in list (dictionary format)
-        return jsonify({"message": "Login successful"}), 200
+    user = User.query.filter_by(username=username)   # returns instance of User model, or none if not found
+    if user and check_password_hash(user.password, password):
+        access_token = create_access_token(identity=user.id)
+        return jsonify({"message": "Login successful", "access_token": access_token}), 200
     else:
-        return jsonify({"error": "invalid username or password"}), 401
+        return jsonify({"error": "Invalid username or password"}), 401
+
+@auth_bp.route('api/logout')
+@jwt_required()
+def logout():
+    return jsonify({"message": 'Logged out successfully'})
