@@ -21,7 +21,10 @@ def submit_score():
         db.session.add(new_score)
         if user.highest_wpm < wpm:
             user.highest_wpm = wpm
-        db.session.commit()
-        return jsonify({"message": "Score submitted", "new_highest_wpm": user.highest_wpm < wpm}), 201
+            db.session.commit()
+            return jsonify({"message": "Score submitted", "new_highest_wpm": True}), 201
+        else:
+            db.session.commit()
+            return jsonify({"message": "Score submitted", "new_highest_wpm": False}), 201
     else:
         return jsonify({"message": "Score not saved (guest)", "wpm": wpm}), 200

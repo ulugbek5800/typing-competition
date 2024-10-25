@@ -11,7 +11,10 @@ app = Flask(__name__)
 # Configure the database for app
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.config['SQLAlchemy_TRACK_MODIFICATIONS'] = False
-app.config['JWT_SECRET_KEY'] = 'webster_hackathon'
+
+# for auth_bp
+app.config['SECRET_KEY'] = 'webster_hackathon'
+app.config['JWT_SECRET_KEY'] = 'jwt_webster_hackathon'
 
 db = SQLAlchemy(app)    # initializing the database
 jwt = JWTManager(app)
