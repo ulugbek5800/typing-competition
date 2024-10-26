@@ -13,18 +13,28 @@ def submit_score():
 
     data = request.get_json()
     wpm = data.get('wpm')
+    mode = data.get('mode') # "normal" or "hard"
+
+    if mode not in ["normal", "hard"]:
+        return jsonify({"error": "Invalid game mode"}), 400
 
     if 'user_id' in session:    # if session was saved in /login route (line 33 in auth.py)
         user_id = session['user_id']
         user = User.query.get(user_id)
-        new_score = Score(user_id=user.id, wpm=wpm) # user_id=user.id -> assigning id from User table to user_id (FK) in Score table
+
+        new_score = Score(user_id=user.id, wpm=wpm, mode=mode) # user_id=user.id -> assigning id from User table to user_id (FK) in Score table
         db.session.add(new_score)
-        if user.highest_wpm < wpm:
-            user.highest_wpm = wpm
-            db.session.commit()
-            return jsonify({"message": "Score submitted", "new_highest_wpm": True}), 201
+
+        if mode == "normal" and user.highest_wpm_normal < wpm:
+            user.highest_wpm_normal = wpm
+            is_new_highest = True
+        elif mode == "hard" and user.highest_wpm_normal < wpm:
+            user.highest_wpm_normal = wpm
+            is_new_highest = True
         else:
-            db.session.commit()
-            return jsonify({"message": "Score submitted", "new_highest_wpm": False}), 201
+            is_new_highest = False
+
+        db.session.commit()
+        return jsonify({"message": "Score submitted", "is_new_highest": is_new_highest}), 201
     else:
-        return jsonify({"message": "Score not saved (guest)", "wpm": wpm}), 200
+        return jsonify({"message": "Score not saved (guest)", "wpm": wpm, "mode": mode}), 200
