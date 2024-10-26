@@ -1,16 +1,12 @@
-from flask import Blueprint, jsonify, request, session
+from flask import Blueprint, jsonify, request
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from models import db, User, Score
-import json
-import random
 
 game_bp = Blueprint('game', __name__)
 
 @game_bp.route('api/submit-score', methods=['POST'])
+@jwt_required(optional=True)
 def submit_score():
-    # add game mode: normal, hard (in JSON and database, and make logic to save)
-    # handle 2 leaderboards for 2 modes
-    # connect backend and frontend, deploy and check (it should be complete working project)
-
     data = request.get_json()
     wpm = data.get('wpm')
     mode = data.get('mode') # "normal" or "hard"
@@ -18,8 +14,8 @@ def submit_score():
     if mode not in ["normal", "hard"]:
         return jsonify({"error": "Invalid game mode"}), 400
 
-    if 'user_id' in session:    # if session was saved in /login route (line 33 in auth.py)
-        user_id = session['user_id']
+    user_id = get_jwt_identity()
+    if user_id:
         user = User.query.get(user_id)
 
         new_score = Score(user_id=user.id, wpm=wpm, mode=mode) # user_id=user.id -> assigning id from User table to user_id (FK) in Score table
