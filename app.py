@@ -19,7 +19,7 @@ def create_app():
     # Plugins (app)
     db.init_app(app)
     jwt.init_app(app)
-    CORS(app, origins=[])   # enabling cors for routes
+    CORS(app, origins=['*'])   # enabling cors for routes
 
     # Register blueprints (routes)
     app.register_blueprint(game_bp)

@@ -8,6 +8,9 @@ game_bp = Blueprint('game', __name__)
 @jwt_required(optional=True)
 def submit_score():
     data = request.get_json()
+    if data is None or 'wpm' not in data or 'mode' not in data:
+        return jsonify({"error": "WPM and mode are required"})
+
     wpm = data.get('wpm')
     mode = data.get('mode') # "normal" or "hard"
 
@@ -38,4 +41,4 @@ def submit_score():
 
         return jsonify({"message": "Score submitted", "is_new_highest": is_new_highest}), 201
     else:
-        return jsonify({"message": "Score not saved (guest)", "wpm": wpm, "mode": mode}), 200
+        return jsonify({"message": "Score not saved (guest scores are not saved permanently)", "wpm": wpm, "mode": mode}), 200

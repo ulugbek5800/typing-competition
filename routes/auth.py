@@ -12,6 +12,9 @@ jwt = JWTManager()
 @auth_bp.route('/api/signup', methods=["POST"])
 def signup():
     data = request.get_json()
+    if data is None or "username" not in data or "password" not in data:
+        return jsonify({"error": "Username and password are required"}), 400
+
     username = data.get("username")
     password = data.get("password")
 
@@ -36,6 +39,9 @@ def signup():
 @auth_bp.route('/api/login', methods=["POST"])
 def login():
     data = request.get_json()
+    if data is None or "username" not in data or "password" not in data:
+        return jsonify({"error": "Username and password are required"}), 400
+
     username = data.get("username")
     password = data.get("password")
 
