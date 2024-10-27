@@ -13,13 +13,14 @@ def submit_score():
 
     if mode not in ["normal", "hard"]:
         return jsonify({"error": "Invalid game mode"}), 400
+    if not (isinstance(wpm, (int, float)) and wpm > 0):
+        return jsonify({"error": "Invalid WPM value"}), 400
 
     user_id = get_jwt_identity()
-    if user_id:
+    if user_id:     # if user is logged in
         user = User.query.get(user_id)
-
+        is_new_highest = False
         new_score = Score(user_id=user.id, wpm=wpm, mode=mode) # user_id=user.id -> assigning id from User table to user_id (FK) in Score table
-        db.session.add(new_score)
 
         if mode == "normal" and user.highest_wpm_normal < wpm:
             user.highest_wpm_normal = wpm
@@ -27,10 +28,14 @@ def submit_score():
         elif mode == "hard" and user.highest_wpm_hard < wpm:
             user.highest_wpm_hard = wpm
             is_new_highest = True
-        else:
-            is_new_highest = False
 
-        db.session.commit()
+        db.session.add(new_score)
+        try:
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            return jsonify({"error": f"There was an error when submitting the score: {str(e)}"}), 500
+
         return jsonify({"message": "Score submitted", "is_new_highest": is_new_highest}), 201
     else:
         return jsonify({"message": "Score not saved (guest)", "wpm": wpm, "mode": mode}), 200

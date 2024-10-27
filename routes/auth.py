@@ -28,7 +28,7 @@ def signup():
         db.session.commit()
     except Exception as e:
         db.session.rollback()
-        return jsonify({"error": f"There was an issue adding a new user: {str(e)}"}), 500
+        return jsonify({"error": f"There was an error adding a new user: {str(e)}"}), 500
 
     access_token = create_access_token(identity=new_user.id)
     return jsonify({"message": "Registration successfull", "access_token": access_token}), 201
