@@ -24,8 +24,8 @@ def submit_score():
         if mode == "normal" and user.highest_wpm_normal < wpm:
             user.highest_wpm_normal = wpm
             is_new_highest = True
-        elif mode == "hard" and user.highest_wpm_normal < wpm:
-            user.highest_wpm_normal = wpm
+        elif mode == "hard" and user.highest_wpm_hard < wpm:
+            user.highest_wpm_hard = wpm
             is_new_highest = True
         else:
             is_new_highest = False
