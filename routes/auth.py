@@ -3,13 +3,13 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import (
     JWTManager, jwt_required, create_access_token, get_jwt_identity
 )
-from app import db
+from extensions import db
 from models import User
 
 auth_bp = Blueprint('auth', __name__)
 jwt = JWTManager()
 
-@auth_bp.route('api/signup', methods=["POST"])
+@auth_bp.route('/api/signup', methods=["POST"])
 def signup():
     data = request.get_json()
     username = data.get["username"]
@@ -27,7 +27,7 @@ def signup():
     access_token = create_access_token(identity=new_user.id)
     return jsonify({"message": "Registration successfull", "access_token": access_token}), 201
 
-@auth_bp.route('api/login', methods=["POST"])
+@auth_bp.route('/api/login', methods=["POST"])
 def login():
     data = request.get_json()
     username = data.get("username")
@@ -40,7 +40,7 @@ def login():
     else:
         return jsonify({"error": "Invalid username or password"}), 401
 
-@auth_bp.route('api/logout')
+@auth_bp.route('/api/logout')
 @jwt_required()
 def logout():
     return jsonify({"message": 'Logged out successfully'})

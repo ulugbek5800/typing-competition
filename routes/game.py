@@ -4,7 +4,7 @@ from models import db, User, Score
 
 game_bp = Blueprint('game', __name__)
 
-@game_bp.route('api/submit-score', methods=['POST'])
+@game_bp.route('/api/submit-score', methods=['POST'])
 @jwt_required(optional=True)
 def submit_score():
     data = request.get_json()
