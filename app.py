@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, jsonify
 from extensions import db, jwt
 from flask_cors import CORS
 from routes.game import game_bp
@@ -25,6 +25,10 @@ def create_app():
     app.register_blueprint(game_bp)
     app.register_blueprint(auth_bp)
     app.register_blueprint(leaderboard_bp)
+
+    @app.route('/', methods=['GET'])
+    def home():
+        return jsonify({"message": "API is running!"}), 200
 
     with app.app_context():
             db.create_all()

@@ -7,7 +7,6 @@ from extensions import db
 from models import User
 
 auth_bp = Blueprint('auth', __name__)
-jwt = JWTManager()
 
 @auth_bp.route('/api/signup', methods=["POST"])
 def signup():

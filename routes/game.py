@@ -9,7 +9,7 @@ game_bp = Blueprint('game', __name__)
 def submit_score():
     data = request.get_json()
     if data is None or 'wpm' not in data or 'mode' not in data:
-        return jsonify({"error": "WPM and mode are required"})
+        return jsonify({"error": "WPM and mode are required"}), 400
 
     wpm = data.get('wpm')
     mode = data.get('mode') # "normal" or "hard"
