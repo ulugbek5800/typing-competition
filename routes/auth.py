@@ -12,17 +12,23 @@ jwt = JWTManager()
 @auth_bp.route('/api/signup', methods=["POST"])
 def signup():
     data = request.get_json()
-    username = data.get["username"]
-    password = data.get["password"]
+    username = data.get("username")
+    password = data.get("password")
 
-    if User.query.filter_by(username=username).first:
+    if len(password) < 8:
+        return jsonify({"error": "Password must contain at least 8 characters"}), 400
+    if User.query.filter_by(username=username).first():
         return jsonify({"error": "Username already exists"}), 400
 
-    hashed_password = generate_password_hash(password)    
-
+    hashed_password = generate_password_hash(password)
     new_user = User(username=username, password=hashed_password)
-    db.session.add(new_user)
-    db.session.commit()
+
+    try:
+        db.session.add(new_user)
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": f"There was an issue adding a new user: {str(e)}"}), 500
 
     access_token = create_access_token(identity=new_user.id)
     return jsonify({"message": "Registration successfull", "access_token": access_token}), 201
@@ -33,7 +39,7 @@ def login():
     username = data.get("username")
     password = data.get("password")
 
-    user = User.query.filter_by(username=username)   # returns instance of User model, or none if not found
+    user = User.query.filter_by(username=username).first()   # returns instance of User model, or none if not found
     if user and check_password_hash(user.password, password):
         access_token = create_access_token(identity=user.id)
         return jsonify({"message": "Login successful", "access_token": access_token}), 200
@@ -43,4 +49,4 @@ def login():
 @auth_bp.route('/api/logout')
 @jwt_required()
 def logout():
-    return jsonify({"message": 'Logged out successfully'})
+    return jsonify({"message": 'Logged out successfully'}), 200
