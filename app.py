@@ -9,7 +9,8 @@ def create_app():
     app = Flask(__name__)   # initializing Flask app
 
     # Configure the database for app
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+    # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////home/ulugbek5800/typing-competition/instance/database.db'   # absolete path, for deployment
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'   # relative path, original
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
     # Security keys for auth_bp
