@@ -1,6 +1,7 @@
 from flask import Flask, jsonify
-from extensions import db, jwt
 from flask_cors import CORS
+
+from extensions import db, jwt
 from routes.game import game_bp
 from routes.auth import auth_bp
 from routes.leaderboard import leaderboard_bp
@@ -29,7 +30,26 @@ def create_app():
 
     @app.route('/', methods=['GET'])
     def home():
-        return jsonify({"message": "API is running!"}), 200
+        info = {
+            "message": "API is running!",
+            "description": "Welcome to the Typing Competition API.",
+            "version": "1.0.0",
+            "features": [
+                "User Authentication: Register and manage your account.",
+                "Gameplay: Test your typing speed and submit your scores to compete with others.",
+                "Leaderboard: View rankings based on performance in different modes."
+            ],
+            "status": "Operational",
+            "available_endpoints": [
+                "/api/signup - Register a new account.",
+                "/api/login - Log in to your account.",
+                "/api/logout - Log out from your account.",
+                "/api/submit-score - Submit your typing score after a game (guest and registered users).",
+                "/api/leaderboard?mode=normal - View leaderboard in normal mode.",
+                "/api/leaderboard?mode=hard - View leaderboard in hard mode."
+            ]
+        }
+        return jsonify(info), 200        
 
     with app.app_context():
             db.create_all()
