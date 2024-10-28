@@ -31,19 +31,19 @@ def create_app():
     @app.route('/', methods=['GET'])
     def home():
         info = {
-            "message": "API is running!",
+            "status": "Operational",
+            "message": "API is running on the server",
             "description": "Welcome to the Typing Competition API.",
-            "version": "1.0.0",
+            "version": "1.1.0",
             "features": [
                 "User Authentication: Register and manage your account.",
                 "Gameplay: Test your typing speed and submit your scores to compete with others.",
                 "Leaderboard: View rankings based on performance in different modes."
             ],
-            "status": "Operational",
             "available_endpoints": [
                 "/api/signup - Register a new account.",
                 "/api/login - Log in to your account.",
-                "/api/logout - Log out from your account.",
+                "/api/profile - Retrieve user information (requires authentication).",
                 "/api/submit-score - Submit your typing score after a game (guest and registered users).",
                 "/api/leaderboard?mode=normal - View leaderboard in normal mode.",
                 "/api/leaderboard?mode=hard - View leaderboard in hard mode."
