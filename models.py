@@ -8,6 +8,7 @@ class User(db.Model):
     password = db.Column(db.String(128), nullable=False)
     highest_wpm_normal = db.Column(db.Integer, default=0)
     highest_wpm_hard = db.Column(db.Integer, default=0)
+    profile_picture = db.Column(db.String(256), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     def __repr__(self) -> str:              # returns a string every time a new element is created

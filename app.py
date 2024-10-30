@@ -1,7 +1,7 @@
 from flask import Flask, jsonify
 from flask_cors import CORS
 
-from extensions import db, jwt
+from extensions import db, jwt, migrate
 from routes.game import game_bp
 from routes.auth import auth_bp
 from routes.leaderboard import leaderboard_bp
@@ -21,6 +21,7 @@ def create_app():
     # Plugins (app)
     db.init_app(app)
     jwt.init_app(app)
+    migrate.init_app(app, db)
     CORS(app, origins=['*'])   # enabling cors for routes   # https://type-com.vercel.app/
 
     # Register blueprints (routes)
