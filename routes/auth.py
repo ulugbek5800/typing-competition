@@ -56,3 +56,10 @@ def login():
         }), 200
     else:
         return jsonify({"error": "Invalid username or password"}), 401
+
+""" # add /api/users route to get all info of users (make accessible only to admin)
+@auth_bp.route('/api/test-users')
+def test_users():
+    users = User.query.all()
+    return jsonify([{"id": user.id, "username": user.username} for user in users])
+"""
