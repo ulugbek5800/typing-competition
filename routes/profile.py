@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, current_app
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from werkzeug.utils import secure_filename
 import os
@@ -7,13 +7,11 @@ from models import User
 
 profile_bp = Blueprint("profile", __name__)
 
-# Configuration for profile_picture
-UPLOAD_FOLDER = "static/profile_pictures"
+# Checks allowed file types
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-
-def allowed_file(filename):
-    pass
+def allowed_file(filename):         # example filename: "profile_picture.JPG"
+    extension = filename.split('.')[-1].lower()
+    return extension in ALLOWED_EXTENSIONS
 
 @profile_bp.route('/api/profile')
 @jwt_required()
@@ -36,9 +34,48 @@ def profile():
     return jsonify({"profile": user_data}), 200
 
 @profile_bp.route('/api/profile/upload-picture', methods=['POST'])
-@jwt_required
+@jwt_required()
 def upload_profile_picture():
-    pass
+    user_id = get_jwt_identity()
+    user = User.query.get(user_id)  # get User instance by id
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+
+    if 'file' not in request.files:
+        return jsonify({"error": "No file provided"}), 400
+
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({"error": "No selected file"}), 400
+
+    if file and allowed_file(file.filename):
+        # sanitize filename to make it secure on the server (prevent spaces and unsafe characters in filename)
+        filename = secure_filename(f"{user_id}_{file.filename}")    # add id to prevent issue if 2 users upload a file with the same filename
+        # construct the full path where the file will be saved
+        filepath = os.path.join(current_app.config["UPLOAD_FOLDER"], filename)    # example filepath: "static/profile_pictures/id_filename.jpg"
+        
+        # create the folder if it doesnt exist
+        os.makedirs(current_app.config["UPLOAD_FOLDER"], exist_ok=True)
+
+        # delete old picture if it exists
+        if user.profile_picture:
+            old_picture_path = user.profile_picture.lstrip("/") # removes leading '/' in the path
+            if os.path.exists(old_picture_path):
+                os.remove(old_picture_path)
+
+        try:
+            # save the file to the filepath on the server
+            file.save(filepath)
+            user.profile_picture = f"/{filepath}"   # relative path
+            db.session.commit()
+            return jsonify({
+                "message": "Profile picture uploaded successfully", 
+                "profile_picture": user.profile_picture
+            }), 200
+        except Exception as e:
+            return jsonify({"error": f"Failed to save profile picture: {str(e)}"}), 500
+    else:
+        return jsonify({"error": "File type not allowed"}), 400
 
 @profile_bp.route('/api/profile/delete-picture', methods=['DELETE'])
 @jwt_required
@@ -48,3 +85,4 @@ def delete_profile_picture():
 # Further updates plan:
 # 1. add profile picture logic (/upload-picture, /delete-picture) to profile.py
 # 2. change home route response, based on changes and restructuring you made
+# 3. add config file

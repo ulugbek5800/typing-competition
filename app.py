@@ -18,6 +18,9 @@ def create_app():
     app.config['SECRET_KEY'] = 'webster_hackathon'
     app.config['JWT_SECRET_KEY'] = 'jwt_webster_hackathon'
 
+    # Configuration for profile_picture folder
+    app.config["UPLOAD_FOLDER"] = "static/profile_pictures"
+
     # Plugins (app)
     db.init_app(app)
     jwt.init_app(app)
