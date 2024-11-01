@@ -36,24 +36,80 @@ def create_app():
     @app.route('/', methods=['GET'])
     def home():
         info = {
-            "status": "Operational",
-            "message": "API is running on the server",
-            "description": "Welcome to the Typing Competition API.",
+            "status": "API is Live",
+            "welcome_message": "Welcome to the Typing Competition API!",
             "features": [
-                "User Authentication: Register and manage your account.",
-                "Gameplay: Test your typing speed and submit your scores to compete with others.",
-                "Leaderboard: View rankings based on performance in different modes."
+                {
+                    "title": "User Authentication",
+                    "description": "Secure signup and login for a personalized experience."
+                },
+                {
+                    "title": "Gameplay",
+                    "description": "Test your typing speed in 'normal' and 'hard' modes and submit scores to compete."
+                },
+                {
+                    "title": "Leaderboards",
+                    "description": "See how you rank against others in both gameplay modes."
+                },
+                {
+                    "title": "Profile Customization",
+                    "description": "Upload and manage your profile picture to personalize your account."
+                }
             ],
-            "available_endpoints": [
-                "/api/signup - Register a new account.",
-                "/api/login - Log in to your account.",
-                "/api/profile - Retrieve user information (requires authentication).",
-                "/api/submit-score - Submit your typing score after a game (guest and registered users).",
-                "/api/leaderboard?mode=normal - View leaderboard in normal mode.",
-                "/api/leaderboard?mode=hard - View leaderboard in hard mode."
-            ]
+            "authentication": {
+            "method": "JWT-based",
+            "description": "Use JSON Web Tokens for secure authentication across endpoints.",
+            "note": "Ensure to include your access token in requests to access protected routes."
+            },
+            "endpoints": {
+                "User Registration": {
+                    "endpoint": "/api/signup",
+                    "method": "POST",
+                    "description": "Create a new account with a username and password."
+                },
+                "User Login": {
+                    "endpoint": "/api/login",
+                    "method": "POST",
+                    "description": "Login to your account and receive an access token for secure session management."
+                },
+                "User Profile": {
+                    "endpoint": "/api/profile",
+                    "method": "GET",
+                    "authentication": "required",
+                    "description": "View your profile details, including your top scores and profile picture."
+                },
+                "Upload Profile Picture": {
+                    "endpoint": "/api/profile/upload-picture",
+                    "method": "POST",
+                    "authentication": "required",
+                    "description": "Upload a new profile picture. Supported formats: PNG, JPG, JPEG."
+                },
+                "Delete Profile Picture": {
+                    "endpoint": "/api/profile/delete-picture",
+                    "method": "DELETE",
+                    "authentication": "required",
+                    "description": "Delete your current profile picture from your account."
+                },
+                "Submit Score": {
+                    "endpoint": "/api/submit-score",
+                    "method": "POST",
+                    "description": "Submit your typing test score and compete for a place on the leaderboard."
+                },
+                "View Leaderboard": {
+                    "endpoint": "/api/leaderboard",
+                    "method": "GET",
+                    "query_parameters": {
+                        "mode": "normal or hard"
+                    },
+                    "description": "Retrieve the leaderboard to see top scores in each difficulty level."
+                }
+            },
+            "support": {
+                "contact": "support@typing-competition.com",
+                "documentation": "For full documentation, visit our GitHub repository."
+            }
         }
-        return jsonify(info), 200        
+        return jsonify(info), 200       
 
     with app.app_context():
             db.create_all()

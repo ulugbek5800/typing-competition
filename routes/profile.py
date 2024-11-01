@@ -13,6 +13,8 @@ def allowed_file(filename):         # example filename: "profile_picture.JPG"
     extension = filename.split('.')[-1].lower()
     return extension in ALLOWED_EXTENSIONS
 
+MAX_FILE_SIZE = 2 * 1024 * 1024     # 2 MB
+
 @profile_bp.route('/api/profile')
 @jwt_required()
 def profile():
@@ -49,6 +51,9 @@ def upload_profile_picture():
         return jsonify({"error": "No selected file"}), 400
 
     if file and allowed_file(file.filename):
+        if file.content_length > MAX_FILE_SIZE:
+            return jsonify({"error": "File size exceeds the maximum limit of 2 MB"}), 400
+
         # sanitize filename to make it secure on the server (prevent spaces and unsafe characters in filename)
         filename = secure_filename(f"{user_id}_{file.filename}")    # add id to prevent issue if 2 users upload a file with the same filename
         # construct the full path where the file will be saved
@@ -65,7 +70,7 @@ def upload_profile_picture():
 
         try:
             file.save(filepath)     # save the file to the filepath on the server
-            user.profile_picture = f"/{filepath}"   # relative path
+            user.profile_picture = f"/{filepath}"   # relative path     # f"/{filepath.replace(os.path.sep, '/')}"
             db.session.commit()
             return jsonify({
                 "message": "Profile picture uploaded successfully", 
@@ -77,7 +82,7 @@ def upload_profile_picture():
         return jsonify({"error": "File type not allowed"}), 400
 
 @profile_bp.route('/api/profile/delete-picture', methods=['DELETE'])
-@jwt_required
+@jwt_required()
 def delete_profile_picture():
     user_id = get_jwt_identity()
     user = User.query.get(user_id)
@@ -98,7 +103,6 @@ def delete_profile_picture():
     else:
         return jsonify({"error": "No profile picture to delete"}), 400
 
-# Further updates plan:
-# 1. add profile picture logic (/upload-picture, /delete-picture) to profile.py
-# 2. change home route response, based on changes and restructuring you made
-# 3. add config file
+# Fix get_jwt_identity in delete
+# Add 2 mb limit for photo
+# Change home response
