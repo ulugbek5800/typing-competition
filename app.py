@@ -37,77 +37,24 @@ def create_app():
     def home():
         info = {
             "status": "API is Live",
-            "welcome_message": "Welcome to the Typing Competition API!",
+            "welcome_message": "Welcome to the WebsterType API! Test your typing speed and compete with others.",
             "features": [
-                {
-                    "title": "User Authentication",
-                    "description": "Secure signup and login for a personalized experience."
-                },
-                {
-                    "title": "Gameplay",
-                    "description": "Test your typing speed in 'normal' and 'hard' modes and submit scores to compete."
-                },
-                {
-                    "title": "Leaderboards",
-                    "description": "See how you rank against others in both gameplay modes."
-                },
-                {
-                    "title": "Profile Customization",
-                    "description": "Upload and manage your profile picture to personalize your account."
-                }
+                "User Authentication: Register and log in securely.",
+                "Gameplay: Compete in 'normal' and 'hard' typing modes.",
+                "Leaderboards: View top scores in each difficulty.",
+                "Profile Customization: Upload and manage a profile picture."
             ],
-            "authentication": {
-            "method": "JWT-based",
-            "description": "Use JSON Web Tokens for secure authentication across endpoints.",
-            "note": "Ensure to include your access token in requests to access protected routes."
-            },
+            "authentication": "JWT-based authentication is required for most actions.",
             "endpoints": {
-                "User Registration": {
-                    "endpoint": "/api/signup",
-                    "method": "POST",
-                    "description": "Create a new account with a username and password."
-                },
-                "User Login": {
-                    "endpoint": "/api/login",
-                    "method": "POST",
-                    "description": "Login to your account and receive an access token for secure session management."
-                },
-                "User Profile": {
-                    "endpoint": "/api/profile",
-                    "method": "GET",
-                    "authentication": "required",
-                    "description": "View your profile details, including your top scores and profile picture."
-                },
-                "Upload Profile Picture": {
-                    "endpoint": "/api/profile/upload-picture",
-                    "method": "POST",
-                    "authentication": "required",
-                    "description": "Upload a new profile picture. Supported formats: PNG, JPG, JPEG."
-                },
-                "Delete Profile Picture": {
-                    "endpoint": "/api/profile/delete-picture",
-                    "method": "DELETE",
-                    "authentication": "required",
-                    "description": "Delete your current profile picture from your account."
-                },
-                "Submit Score": {
-                    "endpoint": "/api/submit-score",
-                    "method": "POST",
-                    "description": "Submit your typing test score and compete for a place on the leaderboard."
-                },
-                "View Leaderboard": {
-                    "endpoint": "/api/leaderboard",
-                    "method": "GET",
-                    "query_parameters": {
-                        "mode": "normal or hard"
-                    },
-                    "description": "Retrieve the leaderboard to see top scores in each difficulty level."
-                }
+                "Signup": "POST /api/signup",
+                "Login": "POST /api/login",
+                "Profile": "GET /api/profile (auth required)",
+                "Upload Profile Picture": "POST /api/profile/upload-picture (auth required)",
+                "Delete Profile Picture": "DELETE /api/profile/delete-picture (auth required)",
+                "Submit Score": "POST /api/submit-score",
+                "Leaderboard": "GET /api/leaderboard?mode=normal/hard"
             },
-            "support": {
-                "contact": "support@typing-competition.com",
-                "documentation": "For full documentation, visit our GitHub repository."
-            }
+            "note": "See GitHub for more details: https://github.com/ulugbek5800/typing-competition"
         }
         return jsonify(info), 200       
 

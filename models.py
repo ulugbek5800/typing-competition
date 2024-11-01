@@ -23,4 +23,4 @@ class Score(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     def __repr__(self) -> str:
-        return f"Score {self.wpm} by User {self.id}"
+        return f"Score {self.wpm} by User {self.user_id}"
