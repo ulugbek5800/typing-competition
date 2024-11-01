@@ -37,7 +37,7 @@ def profile():
 @jwt_required()
 def upload_profile_picture():
     user_id = get_jwt_identity()
-    user = User.query.get(user_id)  # get User instance by id
+    user = User.query.get(user_id)
     if not user:
         return jsonify({"error": "User not found"}), 404
 
@@ -53,7 +53,7 @@ def upload_profile_picture():
         filename = secure_filename(f"{user_id}_{file.filename}")    # add id to prevent issue if 2 users upload a file with the same filename
         # construct the full path where the file will be saved
         filepath = os.path.join(current_app.config["UPLOAD_FOLDER"], filename)    # example filepath: "static/profile_pictures/id_filename.jpg"
-        
+
         # create the folder if it doesnt exist
         os.makedirs(current_app.config["UPLOAD_FOLDER"], exist_ok=True)
 
@@ -64,8 +64,7 @@ def upload_profile_picture():
                 os.remove(old_picture_path)
 
         try:
-            # save the file to the filepath on the server
-            file.save(filepath)
+            file.save(filepath)     # save the file to the filepath on the server
             user.profile_picture = f"/{filepath}"   # relative path
             db.session.commit()
             return jsonify({
@@ -80,7 +79,24 @@ def upload_profile_picture():
 @profile_bp.route('/api/profile/delete-picture', methods=['DELETE'])
 @jwt_required
 def delete_profile_picture():
-    pass
+    user_id = get_jwt_identity()
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+
+    if user.profile_picture:
+        picture_path = user.profile_picture.lstrip("/")
+        if os.path.exists(picture_path):
+            try:
+                os.remove(picture_path)     # delete the picture from the storage
+            except OSError as e:
+                return jsonify({"error": f"Error deleting file: {str(e)}"}), 500
+        # clear the url in the database
+        user.profile_picture = None
+        db.session.commit()
+        return jsonify({"message": "Profile picture deleted succcessfully"}), 200
+    else:
+        return jsonify({"error": "No profile picture to delete"}), 400
 
 # Further updates plan:
 # 1. add profile picture logic (/upload-picture, /delete-picture) to profile.py
