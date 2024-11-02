@@ -47,6 +47,3 @@ All protected routes require JWT authentication. Ensure the access token is incl
 
 For more details, visit the [frontend repository](https://github.com/gitfromnfsheatxaxa/typeCom) or explore the live deployment on [Vercel](https://type-com.vercel.app/).
 
-## License
-
-This project is open-source and licensed under the MIT License.
