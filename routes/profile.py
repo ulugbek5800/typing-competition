@@ -70,11 +70,7 @@ def upload_profile_picture():
 
         try:
             file.save(filepath)     # save the file to the filepath on the server
-            
-            # user.profile_picture = f"/{filepath}"   # relative path     # f"/{filepath.replace(os.path.sep, '/')}"
-            relative_path = os.path.relpath(filepath, current_app.config["UPLOAD_FOLDER"])
-            user.profile_picture = f"/{relative_path.replace(os.path.sep, '/')}"
-            
+            user.profile_picture = f"/{filepath}"   # relative path     # f"/{filepath.replace(os.path.sep, '/')}"
             db.session.commit()
             return jsonify({
                 "message": "Profile picture uploaded successfully", 
